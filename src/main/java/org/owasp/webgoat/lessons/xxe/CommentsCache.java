@@ -88,19 +88,23 @@ public class CommentsCache {
   }
 
   /**
-   * Notice this parse method is not a "trick" to get the XXE working, we need to catch some of the
-   * exception which might happen during when users post message (we want to give feedback track
-   * progress etc). In real life the XmlMapper bean defined above will be used automatically and the
-   * Comment class can be directly used in the controller method (instead of a String)
+   * Notice this parse method is not a "trick" to get the XXE working, we need to
+   * catch some of the
+   * exception which might happen during when users post message (we want to give
+   * feedback track
+   * progress etc). In real life the XmlMapper bean defined above will be used
+   * automatically and the
+   * Comment class can be directly used in the controller method (instead of a
+   * String)
    */
   protected Comment parseXml(String xml) throws JAXBException, XMLStreamException {
     var jc = JAXBContext.newInstance(Comment.class);
     var xif = XMLInputFactory.newInstance();
 
-    if (webSession.isSecurityEnabled()) {
-      xif.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
-      xif.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
-    }
+    xif.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, ""); // Compliant
+    xif.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, ""); // compliant
+    xif.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, false);
+    xif.setProperty(XMLInputFactory.SUPPORT_DTD, false);
 
     var xsr = xif.createXMLStreamReader(new StringReader(xml));
 
